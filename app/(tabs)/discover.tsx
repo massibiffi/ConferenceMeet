@@ -1,0 +1,145 @@
+import { useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  RefreshControl,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { supabase } from "@/lib/supabase";
+import { useActiveEvent } from "@/lib/useActiveEvent";
+import { PersonCard } from "@/components/PersonCard";
+import { SponsorBanner } from "@/components/SponsorBanner";
+import { colors, spacing } from "@/lib/theme";
+import type { MatchResult } from "@/lib/types";
+
+export default function Discover() {
+  const { t } = useTranslation();
+  const { event, loading: eventLoading } = useActiveEvent();
+  const [matches, setMatches] = useState<MatchResult[]>([]);
+  const [metIds, setMetIds] = useState<Set<string>>(new Set());
+  const [followUpCount, setFollowUpCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const load = useCallback(async () => {
+    if (!event) return;
+    setLoading(true);
+    const [{ data, error }, { data: metRows }, { data: noteRows }] = await Promise.all([
+      supabase.rpc("suggested_matches", { p_event_id: event.id, p_limit: 30 }),
+      supabase.from("met_contacts").select("contact_id"),
+      supabase.from("contact_notes").select("contact_id, note, rating"),
+    ]);
+    if (!error && data) setMatches(data);
+    const metList = ((metRows as { contact_id: string }[]) ?? []).map((r) => r.contact_id);
+    setMetIds(new Set(metList));
+    const noted = new Set(
+      ((noteRows as { contact_id: string; note: string | null; rating: number | null }[]) ?? [])
+        .filter((n) => (n.note && n.note.trim()) || n.rating != null)
+        .map((n) => n.contact_id)
+    );
+    setFollowUpCount(metList.filter((cid) => !noted.has(cid)).length);
+    setLoading(false);
+  }, [event]);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
+
+  if (eventLoading) {
+    return <Centered><ActivityIndicator color={colors.accent} /></Centered>;
+  }
+
+  if (!event) {
+    return (
+      <Centered>
+        <Text style={styles.emptyTitle}>{t("discover.noEventTitle")}</Text>
+        <Text style={styles.emptyBody}>{t("discover.noEventBody")}</Text>
+      </Centered>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.safe} edges={["bottom"]}>
+      <FlatList
+        data={matches}
+        keyExtractor={(m) => m.user_id}
+        contentContainerStyle={{ padding: spacing.lg }}
+        ListHeaderComponent={
+          <View style={{ marginBottom: spacing.md }}>
+            <Text style={styles.h1}>{t("discover.title")}</Text>
+            <Text style={[styles.sub, { marginBottom: spacing.md }]}>
+              {t("discover.atEvent", { event: event.name })}
+            </Text>
+            {followUpCount > 0 && (
+              <Pressable style={styles.followUp} onPress={() => router.push("/follow-ups")}>
+                <Text style={styles.followUpText}>
+                  {t("followups.banner", { count: followUpCount })}
+                </Text>
+                <Text style={styles.followUpChevron}>›</Text>
+              </Pressable>
+            )}
+            <SponsorBanner eventId={event.id} />
+          </View>
+        }
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.accent} />
+        }
+        renderItem={({ item }) => (
+          <PersonCard
+            name={item.name}
+            photoUrl={item.photo_url}
+            headline={item.headline}
+            org={item.org}
+            role={item.role}
+            verification={item.verification_level}
+            sharedInterests={item.shared_interests}
+            score={item.score}
+            met={metIds.has(item.user_id)}
+            onPress={() => router.push(`/person/${item.user_id}`)}
+          />
+        )}
+        ListEmptyComponent={
+          !loading ? <Text style={styles.emptyBody}>{t("discover.empty")}</Text> : null
+        }
+      />
+    </SafeAreaView>
+  );
+}
+
+function Centered({ children }: { children: React.ReactNode }) {
+  return <View style={styles.centered}>{children}</View>;
+}
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.bg },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+    gap: spacing.sm,
+    backgroundColor: colors.bg,
+  },
+  h1: { fontSize: 24, fontWeight: "800", color: colors.text },
+  sub: { color: colors.muted, marginTop: 2 },
+  followUp: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.chipBg,
+    borderRadius: 12,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+  },
+  followUpText: { flex: 1, color: colors.accentDark, fontWeight: "700" },
+  followUpChevron: { color: colors.accentDark, fontSize: 22, fontWeight: "700" },
+  emptyTitle: { fontSize: 18, fontWeight: "700", color: colors.text },
+  emptyBody: { color: colors.muted, textAlign: "center" },
+});

@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ConferenceMeet — Moderation</title>
+    <style>
+      :root {
+        --accent: #1f6f54;
+        --accent-dark: #155040;
+        --border: #e2e8e5;
+        --muted: #6b7280;
+        --danger: #b91c1c;
+        --bg: #f6f8f7;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: -apple-system, system-ui, Segoe UI, Roboto, sans-serif;
+        margin: 0;
+        color: #111827;
+        background: #fff;
+      }
+      header {
+        background: var(--accent);
+        color: #fff;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 { font-size: 18px; margin: 0; }
+      main { max-width: 900px; margin: 0 auto; padding: 20px; }
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      input, button {
+        font-size: 15px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+      }
+      input { width: 100%; margin-bottom: 10px; }
+      button { cursor: pointer; border: none; }
+      .btn-primary { background: var(--accent); color: #fff; }
+      .btn-danger { background: var(--danger); color: #fff; }
+      .btn-muted { background: var(--bg); color: #111827; border: 1px solid var(--border); }
+      .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .spacer { flex: 1; }
+      .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+      .tab { padding: 8px 14px; border-radius: 20px; background: var(--bg); border: 1px solid var(--border); }
+      .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+      .muted { color: var(--muted); font-size: 13px; }
+      .badge {
+        display: inline-block; font-size: 12px; padding: 2px 8px;
+        border-radius: 10px; background: #e6f0ec; color: var(--accent-dark);
+      }
+      .badge.warn { background: #fde8e8; color: var(--danger); }
+      .name { font-weight: 700; }
+      .hidden { display: none; }
+      #login { max-width: 360px; margin: 60px auto; }
+      .error { color: var(--danger); font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <!-- Login -->
+    <div id="login" class="card">
+      <h1 style="color: var(--accent); margin-top: 0">ConferenceMeet Moderation</h1>
+      <p class="muted">Sign in with a staff account.</p>
+      <input id="email" type="email" placeholder="Email" autocomplete="username" />
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
+      <button id="loginBtn" class="btn-primary" style="width: 100%">Sign in</button>
+      <p id="loginError" class="error"></p>
+    </div>
+
+    <!-- App -->
+    <div id="app" class="hidden">
+      <header>
+        <h1>ConferenceMeet — Moderation</h1>
+        <div class="row">
+          <span id="whoami" style="color: #d7efe6; font-size: 13px"></span>
+          <button id="signOut" class="btn-muted">Sign out</button>
+        </div>
+      </header>
+      <main>
+        <div class="tabs">
+          <div class="tab active" data-tab="reports">Reports</div>
+          <div class="tab" data-tab="users">Users</div>
+          <div class="tab" data-tab="sponsors">Sponsors</div>
+          <div class="tab" data-tab="orgs">Verified orgs</div>
+        </div>
+        <div id="reports"></div>
+        <div id="users" class="hidden">
+          <input id="userSearch" placeholder="Search name / org / headline" />
+          <div id="usersList"></div>
+        </div>
+        <div id="sponsors" class="hidden">
+          <div class="card">
+            <label class="muted">Event</label>
+            <select id="sponsorEvent" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin: 6px 0 12px"></select>
+            <div class="row" style="gap: 6px; flex-wrap: wrap">
+              <input id="spName" placeholder="Sponsor name" style="flex: 1 1 140px; margin: 0" />
+              <input id="spTagline" placeholder="Tagline (optional)" style="flex: 1 1 140px; margin: 0" />
+            </div>
+            <div class="row" style="gap: 6px; flex-wrap: wrap; margin-top: 6px">
+              <input id="spLogo" placeholder="Logo URL (optional)" style="flex: 1 1 140px; margin: 0" />
+              <input id="spLink" placeholder="Link URL (optional)" style="flex: 1 1 140px; margin: 0" />
+              <input id="spWeight" type="number" min="1" value="1" title="Weight" style="width: 70px; margin: 0" />
+            </div>
+            <button id="spAdd" class="btn-primary" style="margin-top: 10px">Add sponsor</button>
+          </div>
+          <div id="sponsorsList"></div>
+        </div>
+        <div id="orgs" class="hidden">
+          <div class="card">
+            <p class="muted">
+              Email domains that earn a "verified org" badge. National bodies use different
+              domains, so add each one (e.g. wwf.org, wwf.org.za, wwf.or.ke). Sub-domains
+              are matched automatically.
+            </p>
+            <div class="row" style="gap: 6px; flex-wrap: wrap">
+              <input id="orgDomain" placeholder="domain, e.g. wwf.or.ke" style="flex: 1 1 160px; margin: 0" />
+              <input id="orgLabel" placeholder="label (optional), e.g. WWF Kenya" style="flex: 1 1 160px; margin: 0" />
+              <button id="orgAdd" class="btn-primary">Add</button>
+            </div>
+          </div>
+          <div id="orgsList"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+      const cfg = window.CM_CONFIG || {};
+      if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) {
+        document.body.innerHTML =
+          '<p style="padding:20px">Missing config. Copy <code>config.example.js</code> to <code>config.js</code> and fill it in.</p>';
+        throw new Error("missing config");
+      }
+      const sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) =>
+        (s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+      async function requireStaff() {
+        const { data } = await sb.auth.getUser();
+        if (!data.user) return null;
+        const { data: me } = await sb
+          .from("users")
+          .select("name, is_staff")
+          .eq("id", data.user.id)
+          .maybeSingle();
+        return me && me.is_staff ? { ...me, email: data.user.email } : null;
+      }
+
+      async function boot() {
+        const me = await requireStaff();
+        if (me) {
+          $("login").classList.add("hidden");
+          $("app").classList.remove("hidden");
+          $("whoami").textContent = me.name || me.email;
+          loadReports();
+        } else {
+          $("app").classList.add("hidden");
+          $("login").classList.remove("hidden");
+        }
+      }
+
+      $("loginBtn").onclick = async () => {
+        $("loginError").textContent = "";
+        const { error } = await sb.auth.signInWithPassword({
+          email: $("email").value.trim(),
+          password: $("password").value,
+        });
+        if (error) return ($("loginError").textContent = error.message);
+        const me = await requireStaff();
+        if (!me) {
+          await sb.auth.signOut();
+          return ($("loginError").textContent =
+            "This account is not a staff/moderator account.");
+        }
+        boot();
+      };
+
+      $("signOut").onclick = async () => {
+        await sb.auth.signOut();
+        boot();
+      };
+
+      // Tabs
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.onclick = () => {
+          document.querySelectorAll(".tab").forEach((x) => x.classList.remove("active"));
+          t.classList.add("active");
+          const tab = t.dataset.tab;
+          $("reports").classList.toggle("hidden", tab !== "reports");
+          $("users").classList.toggle("hidden", tab !== "users");
+          $("sponsors").classList.toggle("hidden", tab !== "sponsors");
+          $("orgs").classList.toggle("hidden", tab !== "orgs");
+          if (tab === "reports") loadReports();
+          if (tab === "users") loadUsers();
+          if (tab === "sponsors") initSponsors();
+          if (tab === "orgs") loadOrgs();
+        };
+      });
+
+      // -------- Reports --------
+      async function loadReports() {
+        const { data, error } = await sb
+          .from("reports")
+          .select(
+            "id, reason, status, created_at, reported_user_id," +
+              "reporter:users!reports_reporter_id_fkey(name)," +
+              "reported:users!reports_reported_user_id_fkey(name, is_banned)"
+          )
+          .order("created_at", { ascending: false });
+        const el = $("reports");
+        if (error) return (el.innerHTML = `<p class="error">${esc(error.message)}</p>`);
+        if (!data.length) return (el.innerHTML = '<p class="muted">No reports. 🎉</p>');
+        el.innerHTML = data
+          .map(
+            (r) => `
+          <div class="card">
+            <div class="row">
+              <span class="name">${esc(r.reported?.name) || "Unknown"}</span>
+              ${r.reported?.is_banned ? '<span class="badge warn">banned</span>' : ""}
+              <span class="badge">${esc(r.status)}</span>
+              <span class="spacer"></span>
+              <span class="muted">${new Date(r.created_at).toLocaleString()}</span>
+            </div>
+            <p class="muted">Reported by ${esc(r.reporter?.name) || "someone"} · ${esc(r.reason) || "no reason given"}</p>
+            <div class="row">
+              ${
+                r.status === "open"
+                  ? `<button class="btn-muted" onclick="resolveReport('${r.id}')">Mark resolved</button>`
+                  : ""
+              }
+              <button class="btn-danger" onclick="setBanned('${r.reported_user_id}', true)">Ban user</button>
+            </div>
+          </div>`
+          )
+          .join("");
+      }
+
+      window.resolveReport = async (id) => {
+        await sb.from("reports").update({ status: "resolved" }).eq("id", id);
+        loadReports();
+      };
+
+      // -------- Users --------
+      let userTimer;
+      $("userSearch").oninput = () => {
+        clearTimeout(userTimer);
+        userTimer = setTimeout(loadUsers, 250);
+      };
+
+      async function loadUsers() {
+        const q = $("userSearch").value.trim();
+        let query = sb
+          .from("users")
+          .select("id, name, org, headline, role, verification_level, is_banned")
+          .order("created_at", { ascending: false })
+          .limit(50);
+        if (q) query = query.or(`name.ilike.%${q}%,org.ilike.%${q}%,headline.ilike.%${q}%`);
+        const { data, error } = await query;
+        const el = $("usersList");
+        if (error) return (el.innerHTML = `<p class="error">${esc(error.message)}</p>`);
+        if (!data.length) return (el.innerHTML = '<p class="muted">No users match.</p>');
+        el.innerHTML = data
+          .map(
+            (u) => `
+          <div class="card">
+            <div class="row">
+              <span class="name">${esc(u.name) || "Unnamed"}</span>
+              <span class="badge">${esc(u.verification_level)}</span>
+              ${u.is_banned ? '<span class="badge warn">banned</span>' : ""}
+            </div>
+            <p class="muted">${esc(u.role)}${u.org ? " · " + esc(u.org) : ""}${u.headline ? " · " + esc(u.headline) : ""}</p>
+            <div class="row">
+              ${
+                u.verification_level === "none" || u.verification_level === "email"
+                  ? `<button class="btn-primary" onclick="verifyManual('${u.id}')">Verify (manual)</button>`
+                  : ""
+              }
+              ${
+                u.is_banned
+                  ? `<button class="btn-muted" onclick="setBanned('${u.id}', false)">Unban</button>`
+                  : `<button class="btn-danger" onclick="setBanned('${u.id}', true)">Ban</button>`
+              }
+            </div>
+          </div>`
+          )
+          .join("");
+      }
+
+      window.verifyManual = async (id) => {
+        await sb.from("users").update({ verification_level: "manual" }).eq("id", id);
+        loadUsers();
+      };
+      window.setBanned = async (id, banned) => {
+        await sb.from("users").update({ is_banned: banned }).eq("id", id);
+        loadReports();
+        loadUsers();
+      };
+
+      // -------- Sponsors --------
+      let sponsorsEventsLoaded = false;
+      async function initSponsors() {
+        if (!sponsorsEventsLoaded) {
+          const { data } = await sb.from("events").select("id, name").order("name");
+          const sel = $("sponsorEvent");
+          sel.innerHTML = (data || [])
+            .map((e) => `<option value="${e.id}">${esc(e.name)}</option>`)
+            .join("");
+          sel.onchange = loadSponsors;
+          sponsorsEventsLoaded = true;
+        }
+        loadSponsors();
+      }
+
+      async function loadSponsors() {
+        const eventId = $("sponsorEvent").value;
+        const el = $("sponsorsList");
+        if (!eventId) return (el.innerHTML = '<p class="muted">Create an event first.</p>');
+        const { data, error } = await sb
+          .from("sponsors")
+          .select("*")
+          .eq("event_id", eventId)
+          .order("created_at", { ascending: false });
+        if (error) return (el.innerHTML = `<p class="error">${esc(error.message)}</p>`);
+        if (!data.length) return (el.innerHTML = '<p class="muted">No sponsors for this event yet.</p>');
+        el.innerHTML = data
+          .map(
+            (s) => `
+          <div class="card">
+            <div class="row">
+              <span class="name">${esc(s.name)}</span>
+              <span class="badge">weight ${s.weight}</span>
+              ${s.is_active ? '<span class="badge">active</span>' : '<span class="badge warn">hidden</span>'}
+            </div>
+            ${s.tagline ? `<p class="muted">${esc(s.tagline)}</p>` : ""}
+            ${s.link_url ? `<p class="muted">${esc(s.link_url)}</p>` : ""}
+            <div class="row">
+              <button class="btn-muted" onclick="toggleSponsor('${s.id}', ${!s.is_active})">
+                ${s.is_active ? "Hide" : "Show"}
+              </button>
+              <button class="btn-danger" onclick="deleteSponsor('${s.id}')">Delete</button>
+            </div>
+          </div>`
+          )
+          .join("");
+      }
+
+      $("spAdd").onclick = async () => {
+        const eventId = $("sponsorEvent").value;
+        const name = $("spName").value.trim();
+        if (!eventId || !name) return alert("Pick an event and enter a sponsor name.");
+        const { error } = await sb.from("sponsors").insert({
+          event_id: eventId,
+          name,
+          tagline: $("spTagline").value.trim() || null,
+          logo_url: $("spLogo").value.trim() || null,
+          link_url: $("spLink").value.trim() || null,
+          weight: parseInt($("spWeight").value, 10) || 1,
+        });
+        if (error) return alert(error.message);
+        ["spName", "spTagline", "spLogo", "spLink"].forEach((id) => ($(id).value = ""));
+        $("spWeight").value = "1";
+        loadSponsors();
+      };
+
+      window.toggleSponsor = async (id, active) => {
+        await sb.from("sponsors").update({ is_active: active }).eq("id", id);
+        loadSponsors();
+      };
+      window.deleteSponsor = async (id) => {
+        if (!confirm("Delete this sponsor?")) return;
+        await sb.from("sponsors").delete().eq("id", id);
+        loadSponsors();
+      };
+
+      // -------- Verified org domains --------
+      async function loadOrgs() {
+        const { data, error } = await sb
+          .from("org_domains")
+          .select("domain, org_name")
+          .order("domain");
+        const el = $("orgsList");
+        if (error) return (el.innerHTML = `<p class="error">${esc(error.message)}</p>`);
+        if (!data.length) return (el.innerHTML = '<p class="muted">No verified org domains yet.</p>');
+        el.innerHTML = data
+          .map(
+            (o) => `
+          <div class="card">
+            <div class="row">
+              <span class="name">${esc(o.domain)}</span>
+              ${o.org_name ? `<span class="muted">${esc(o.org_name)}</span>` : ""}
+              <span class="spacer"></span>
+              <button class="btn-danger" onclick="deleteOrg('${esc(o.domain)}')">Remove</button>
+            </div>
+          </div>`
+          )
+          .join("");
+      }
+
+      $("orgAdd").onclick = async () => {
+        const domain = $("orgDomain").value.trim().toLowerCase().replace(/^@/, "");
+        if (!domain || !domain.includes(".")) return alert("Enter a valid domain, e.g. wwf.or.ke");
+        const { error } = await sb
+          .from("org_domains")
+          .insert({ domain, org_name: $("orgLabel").value.trim() || null });
+        if (error) return alert(error.message);
+        $("orgDomain").value = "";
+        $("orgLabel").value = "";
+        loadOrgs();
+      };
+
+      window.deleteOrg = async (domain) => {
+        if (!confirm("Remove " + domain + " from the verified list?")) return;
+        await sb.from("org_domains").delete().eq("domain", domain);
+        loadOrgs();
+      };
+
+      boot();
+    </script>
+  </body>
+</html>

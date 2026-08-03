@@ -1,0 +1,138 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "loading": "Chargement...",
+    "signOut": "Se déconnecter",
+    "ad": "Pub",
+    "notNow": "Plus tard",
+    "save": "Enregistrer"
+  },
+  "auth": {
+    "tagline": "Trouvez les personnes à rencontrer lors de votre événement.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "signIn": "Se connecter",
+    "createAccount": "Créer un compte",
+    "toSignUp": "Nouveau ici ? Créez un compte",
+    "toSignIn": "Vous avez déjà un compte ? Connectez-vous",
+    "or": "ou",
+    "continueLinkedIn": "Continuer avec LinkedIn",
+    "openingLinkedIn": "Ouverture de LinkedIn...",
+    "linkedInHint": "Se connecter avec LinkedIn ajoute un badge vérifié à votre profil.",
+    "missingTitle": "Informations manquantes",
+    "missingBody": "Saisissez un e-mail et un mot de passe.",
+    "checkEmailTitle": "Vérifiez vos e-mails",
+    "checkEmailBody": "Confirmez votre adresse pour terminer l'inscription, puis connectez-vous.",
+    "errorTitle": "Une erreur est survenue",
+    "linkedInTitle": "Connexion LinkedIn"
+  },
+  "tabs": {
+    "discover": "Découvrir",
+    "directory": "Annuaire",
+    "profile": "Profil"
+  },
+  "discover": {
+    "title": "Suggéré pour vous",
+    "atEvent": "à {{event}}",
+    "noEventTitle": "Aucun événement",
+    "noEventBody": "Rejoignez un événement depuis l'onglet Annuaire pour voir des personnes correspondant à vos centres d'intérêt.",
+    "empty": "Pas encore de correspondances. Ajoutez des centres d'intérêt à votre profil et revenez quand d'autres personnes rejoindront."
+  },
+  "directory": {
+    "all": "Tous",
+    "search": "Rechercher nom, organisation, titre",
+    "noMatch": "Aucun participant ne correspond.",
+    "joinTitle": "Rejoindre un événement",
+    "join": "Rejoindre",
+    "noEvents": "Aucun événement pour l'instant. Un organisateur doit en créer un (insérer une ligne dans la table events)."
+  },
+  "profile": {
+    "title": "Votre profil",
+    "name": "Nom",
+    "headline": "Titre",
+    "headlinePlaceholder": "ex. Responsable politique climatique",
+    "org": "Organisation",
+    "role": "Rôle",
+    "intent": "Ce que j'espère retirer de cet événement",
+    "intentPlaceholder": "1 à 2 phrases — cela guide vos correspondances",
+    "bio": "Courte biographie",
+    "interests": "Centres d'intérêt ({{count}})",
+    "saving": "Enregistrement...",
+    "save": "Enregistrer le profil",
+    "savedTitle": "Enregistré",
+    "savedBody": "Votre profil est à jour.",
+    "saveFailed": "Échec de l'enregistrement",
+    "language": "Langue",
+    "location": {
+      "title": "Partage de position",
+      "explainer": "Désactivé par défaut. Une fois activé, les autres participants voient uniquement votre zone approximative — jamais votre position précise — et le partage expire automatiquement après 2 heures.",
+      "shareOn": "Partage activé — appuyez pour arrêter",
+      "shareOff": "Partager ma position approximative",
+      "needEventTitle": "Rejoignez d'abord un événement",
+      "needEventBody": "Le partage de position est limité à un événement.",
+      "startFailed": "Impossible de démarrer le partage"
+    }
+  },
+  "person": {
+    "hereTo": "Objectif",
+    "about": "À propos",
+    "interests": "Centres d'intérêt",
+    "message": "Message",
+    "requestSent": "Demande envoyée",
+    "connect": "Se connecter",
+    "openChat": "Ouvrir la discussion",
+    "report": "Signaler",
+    "block": "Bloquer",
+    "blocked": "Bloqué",
+    "unavailable": "Ce profil n'est pas disponible.",
+    "requestFailed": "Impossible d'envoyer la demande",
+    "reportConfirmTitle": "Signaler cette personne ?",
+    "reportConfirmBody": "Ceci sera envoyé aux modérateurs de l'événement.",
+    "reportThanksTitle": "Merci",
+    "reportThanksBody": "Nos modérateurs examineront ce signalement.",
+    "blockedTitle": "Bloqué",
+    "blockedBody": "Vous ne verrez plus cette personne et ne serez plus mis en relation avec elle.",
+    "markMet": "Marquer comme rencontré(e) en personne",
+    "met": "Rencontré(e) en personne",
+    "notesTitle": "Vos notes privées",
+    "notesPlaceholder": "Privé — comment ça s'est passé, à suivre…",
+    "rating": "Noter cette rencontre",
+    "saveNotes": "Enregistrer les notes",
+    "privacyTitle": "Confidentialité pour ce contact",
+    "hideMe": "Me masquer pour cette personne",
+    "hideLocation": "Masquer ma position pour cette personne",
+    "metNudgeTitle": "Vous avez rencontré {{name}} !",
+    "metNudgeBody": "Ajouter une note ou une évaluation tant que c'est frais ?",
+    "metNudgeAdd": "Ajouter une note"
+  },
+  "personCard": {
+    "unnamed": "Sans nom",
+    "shared": "En commun : {{list}}",
+    "met": "Rencontré(e)"
+  },
+  "followups": {
+    "title": "Suivis",
+    "banner": "Faire un suivi avec {{count}} personnes rencontrées",
+    "empty": "Aucun suivi — vous êtes à jour.",
+    "subtitle": "Personnes rencontrées mais pas encore notées"
+  },
+  "chat": {
+    "title": "Discussion",
+    "errorTitle": "Impossible d'ouvrir la discussion.",
+    "errorHint": "Vérifiez que la fonction stream-token est déployée et que les clés Stream sont configurées."
+  },
+  "role": {
+    "ngo": "ONG",
+    "journalist": "Journaliste",
+    "researcher": "Chercheur",
+    "activist": "Militant",
+    "youth_delegate": "Délégué jeunesse",
+    "other": "Autre"
+  },
+  "language": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "ar": "العربية"
+  }
+}

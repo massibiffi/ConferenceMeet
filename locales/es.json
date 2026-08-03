@@ -1,0 +1,138 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "loading": "Cargando...",
+    "signOut": "Cerrar sesión",
+    "ad": "Anuncio",
+    "notNow": "Ahora no",
+    "save": "Guardar"
+  },
+  "auth": {
+    "tagline": "Encuentra a las personas que vale la pena conocer en tu evento.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "createAccount": "Crear cuenta",
+    "toSignUp": "¿Nuevo aquí? Crea una cuenta",
+    "toSignIn": "¿Ya tienes una cuenta? Inicia sesión",
+    "or": "o",
+    "continueLinkedIn": "Continuar con LinkedIn",
+    "openingLinkedIn": "Abriendo LinkedIn...",
+    "linkedInHint": "Iniciar sesión con LinkedIn añade una insignia verificada a tu perfil.",
+    "missingTitle": "Faltan datos",
+    "missingBody": "Introduce un correo y una contraseña.",
+    "checkEmailTitle": "Revisa tu correo",
+    "checkEmailBody": "Confirma tu dirección para completar el registro y luego inicia sesión.",
+    "errorTitle": "Algo salió mal",
+    "linkedInTitle": "Inicio de sesión con LinkedIn"
+  },
+  "tabs": {
+    "discover": "Descubrir",
+    "directory": "Directorio",
+    "profile": "Perfil"
+  },
+  "discover": {
+    "title": "Sugerencias para ti",
+    "atEvent": "en {{event}}",
+    "noEventTitle": "Aún no hay evento",
+    "noEventBody": "Únete a un evento desde la pestaña Directorio para ver personas que coinciden con tus intereses.",
+    "empty": "Aún no hay coincidencias. Añade intereses en tu perfil y vuelve cuando se unan más personas."
+  },
+  "directory": {
+    "all": "Todos",
+    "search": "Buscar nombre, organización, título",
+    "noMatch": "Ningún asistente coincide.",
+    "joinTitle": "Únete a un evento",
+    "join": "Unirse",
+    "noEvents": "Aún no hay eventos. Un organizador debe crear uno (insertar una fila en la tabla events)."
+  },
+  "profile": {
+    "title": "Tu perfil",
+    "name": "Nombre",
+    "headline": "Titular",
+    "headlinePlaceholder": "p. ej. Responsable de política climática",
+    "org": "Organización",
+    "role": "Rol",
+    "intent": "Lo que espero obtener de este evento",
+    "intentPlaceholder": "1 o 2 frases — esto impulsa tus coincidencias",
+    "bio": "Biografía breve",
+    "interests": "Intereses ({{count}})",
+    "saving": "Guardando...",
+    "save": "Guardar perfil",
+    "savedTitle": "Guardado",
+    "savedBody": "Tu perfil está actualizado.",
+    "saveFailed": "Error al guardar",
+    "language": "Idioma",
+    "location": {
+      "title": "Compartir ubicación",
+      "explainer": "Desactivado por defecto. Cuando está activado, otros asistentes ven solo tu zona aproximada — nunca tu ubicación precisa — y el uso compartido caduca automáticamente tras 2 horas.",
+      "shareOn": "Compartir activado — toca para detener",
+      "shareOff": "Compartir mi ubicación aproximada",
+      "needEventTitle": "Únete primero a un evento",
+      "needEventBody": "Compartir la ubicación está limitado a un evento.",
+      "startFailed": "No se pudo iniciar el uso compartido"
+    }
+  },
+  "person": {
+    "hereTo": "Aquí para",
+    "about": "Acerca de",
+    "interests": "Intereses",
+    "message": "Mensaje",
+    "requestSent": "Solicitud enviada",
+    "connect": "Conectar",
+    "openChat": "Abrir chat",
+    "report": "Reportar",
+    "block": "Bloquear",
+    "blocked": "Bloqueado",
+    "unavailable": "Este perfil no está disponible.",
+    "requestFailed": "No se pudo enviar la solicitud",
+    "reportConfirmTitle": "¿Reportar a esta persona?",
+    "reportConfirmBody": "Esto se enviará a los moderadores del evento.",
+    "reportThanksTitle": "Gracias",
+    "reportThanksBody": "Nuestros moderadores lo revisarán.",
+    "blockedTitle": "Bloqueado",
+    "blockedBody": "No verás a esta persona ni serás emparejado con ella.",
+    "markMet": "Marcar como conocido en persona",
+    "met": "Conocido en persona",
+    "notesTitle": "Tus notas privadas",
+    "notesPlaceholder": "Privado — cómo fue, qué seguir…",
+    "rating": "Valora este encuentro",
+    "saveNotes": "Guardar notas",
+    "privacyTitle": "Privacidad para este contacto",
+    "hideMe": "Ocultarme de esta persona",
+    "hideLocation": "Ocultar mi ubicación a esta persona",
+    "metNudgeTitle": "¡Conociste a {{name}}!",
+    "metNudgeBody": "¿Añadir una nota o valoración mientras está reciente?",
+    "metNudgeAdd": "Añadir nota"
+  },
+  "personCard": {
+    "unnamed": "Sin nombre",
+    "shared": "En común: {{list}}",
+    "met": "Conocido"
+  },
+  "followups": {
+    "title": "Seguimientos",
+    "banner": "Haz seguimiento con {{count}} personas que conociste",
+    "empty": "Sin seguimientos: estás al día.",
+    "subtitle": "Personas que conociste pero aún no anotaste"
+  },
+  "chat": {
+    "title": "Chat",
+    "errorTitle": "No se pudo abrir el chat.",
+    "errorHint": "Comprueba que la función stream-token esté desplegada y que las claves de Stream estén configuradas."
+  },
+  "role": {
+    "ngo": "ONG",
+    "journalist": "Periodista",
+    "researcher": "Investigador",
+    "activist": "Activista",
+    "youth_delegate": "Delegado juvenil",
+    "other": "Otro"
+  },
+  "language": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "ar": "العربية"
+  }
+}

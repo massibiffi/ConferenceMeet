@@ -1,0 +1,138 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "signOut": "Sign out",
+    "ad": "Ad",
+    "notNow": "Not now",
+    "save": "Save"
+  },
+  "auth": {
+    "tagline": "Find the people worth meeting at your event.",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "toSignUp": "New here? Create an account",
+    "toSignIn": "Already have an account? Sign in",
+    "or": "or",
+    "continueLinkedIn": "Continue with LinkedIn",
+    "openingLinkedIn": "Opening LinkedIn...",
+    "linkedInHint": "Signing in with LinkedIn adds a verified badge to your profile.",
+    "missingTitle": "Missing details",
+    "missingBody": "Enter an email and password.",
+    "checkEmailTitle": "Check your email",
+    "checkEmailBody": "Confirm your address to finish signing up, then sign in.",
+    "errorTitle": "Something went wrong",
+    "linkedInTitle": "LinkedIn sign-in"
+  },
+  "tabs": {
+    "discover": "Discover",
+    "directory": "Directory",
+    "profile": "Profile"
+  },
+  "discover": {
+    "title": "Suggested for you",
+    "atEvent": "at {{event}}",
+    "noEventTitle": "No event yet",
+    "noEventBody": "Join an event from the Directory tab to see people matched to your interests.",
+    "empty": "No matches yet. Add interests on your Profile, and check back as more people join."
+  },
+  "directory": {
+    "all": "All",
+    "search": "Search name, org, headline",
+    "noMatch": "No attendees match.",
+    "joinTitle": "Join an event",
+    "join": "Join",
+    "noEvents": "No events yet. An organizer needs to create one (insert a row into the events table)."
+  },
+  "profile": {
+    "title": "Your profile",
+    "name": "Name",
+    "headline": "Headline",
+    "headlinePlaceholder": "e.g. Climate policy lead",
+    "org": "Organization",
+    "role": "Role",
+    "intent": "What I'm hoping to get from this event",
+    "intentPlaceholder": "1–2 sentences — this drives your matches",
+    "bio": "Short bio",
+    "interests": "Interests ({{count}})",
+    "saving": "Saving...",
+    "save": "Save profile",
+    "savedTitle": "Saved",
+    "savedBody": "Your profile is up to date.",
+    "saveFailed": "Save failed",
+    "language": "Language",
+    "location": {
+      "title": "Location sharing",
+      "explainer": "Off by default. When on, others at your event see only your approximate zone — never your precise location — and sharing auto-expires after 2 hours.",
+      "shareOn": "Sharing on — tap to stop",
+      "shareOff": "Share my approximate location",
+      "needEventTitle": "Join an event first",
+      "needEventBody": "Location sharing is scoped to an event.",
+      "startFailed": "Couldn't start sharing"
+    }
+  },
+  "person": {
+    "hereTo": "Here to",
+    "about": "About",
+    "interests": "Interests",
+    "message": "Message",
+    "requestSent": "Request sent",
+    "connect": "Connect",
+    "openChat": "Open chat",
+    "report": "Report",
+    "block": "Block",
+    "blocked": "Blocked",
+    "unavailable": "This profile isn't available.",
+    "requestFailed": "Couldn't send request",
+    "reportConfirmTitle": "Report this person?",
+    "reportConfirmBody": "This will be sent to the event moderators.",
+    "reportThanksTitle": "Thanks",
+    "reportThanksBody": "Our moderators will review this.",
+    "blockedTitle": "Blocked",
+    "blockedBody": "You won't see or be matched with this person.",
+    "markMet": "Mark as met in person",
+    "met": "Met in person",
+    "notesTitle": "Your private notes",
+    "notesPlaceholder": "Private to you — how it went, what to follow up on…",
+    "rating": "Rate this meeting",
+    "saveNotes": "Save notes",
+    "privacyTitle": "Privacy for this contact",
+    "hideMe": "Hide me from this person",
+    "hideLocation": "Hide my location from this person",
+    "metNudgeTitle": "You met {{name}}!",
+    "metNudgeBody": "Add a private note or rating while it's fresh?",
+    "metNudgeAdd": "Add note"
+  },
+  "personCard": {
+    "unnamed": "Unnamed",
+    "shared": "Shared: {{list}}",
+    "met": "Met"
+  },
+  "followups": {
+    "title": "Follow-ups",
+    "banner": "Follow up with {{count}} people you met",
+    "empty": "No follow-ups — you're all caught up.",
+    "subtitle": "People you met but haven't noted yet"
+  },
+  "chat": {
+    "title": "Chat",
+    "errorTitle": "Couldn't open chat.",
+    "errorHint": "Check that the stream-token function is deployed and Stream keys are set."
+  },
+  "role": {
+    "ngo": "NGO",
+    "journalist": "Journalist",
+    "researcher": "Researcher",
+    "activist": "Activist",
+    "youth_delegate": "Youth delegate",
+    "other": "Other"
+  },
+  "language": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "ar": "العربية"
+  }
+}

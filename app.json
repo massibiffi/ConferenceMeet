@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "ConferenceMeet",
+    "slug": "conference-meet",
+    "scheme": "conferencemeet",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#1F6F54"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "ConferenceMeet uses your approximate location only while the app is open, and only if you turn on sharing, to show which zone or hall you're in. Your precise location is never shared with other attendees."
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_COARSE_LOCATION"]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "ConferenceMeet uses your approximate location only while the app is open, and only if you turn on sharing."
+        }
+      ]
+    ],
+    "extra": {
+      "supabaseUrl": "",
+      "supabaseAnonKey": ""
+    }
+  }
+}
