@@ -19,7 +19,6 @@
     "expo-asset": "~57.0.9",
     "expo-audio": "~57.0.3",
     "expo-auth-session": "^57.0.5",
-    "expo-av": "^16.0.8",
     "expo-clipboard": "~57.0.1",
     "expo-constants": "^57.0.8",
     "expo-dev-client": "~57.0.10",
@@ -54,13 +53,6 @@
     "stream-chat": "^8.40.0",
     "stream-chat-expo": "^9.7.2"
   },
-"expo": {
-  "doctor": {
-    "reactNativeDirectoryCheck": {
-      "exclude": ["expo-av"]
-    }
-  }
-},
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/react": "~19.2.4",
