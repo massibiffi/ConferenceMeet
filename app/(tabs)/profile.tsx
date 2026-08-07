@@ -68,13 +68,23 @@ export default function Profile() {
     setProfile((p) => ({ ...p, [key]: value }));
   }
 
-  function toggleInterest(id: number) {
+ /* function toggleInterest(id: number) {
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
-  }
+  }*/
+
+function toggleInterest(id: number) {
+  console.log("toggleInterest called with:", id);
+  setSelected((prev) => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    console.log("new selected set:", next);
+    return next;
+  });
+}
 
   async function save() {
     setSaving(true);

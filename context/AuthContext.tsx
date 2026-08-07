@@ -34,7 +34,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signUpWithEmail(email: string, password: string) {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: "conferencemeet://auth/callback",
+      },
+    });
     return { error: error?.message };
   }
 

@@ -6,11 +6,6 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#1F6F54"
-    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -18,7 +13,12 @@
       }
     },
     "android": {
-      "permissions": ["ACCESS_COARSE_LOCATION"]
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.massibiffi.conferencemeet"
     },
     "plugins": [
       "expo-router",
@@ -27,11 +27,30 @@
         {
           "locationWhenInUsePermission": "ConferenceMeet uses your approximate location only while the app is open, and only if you turn on sharing."
         }
-      ]
+      ],
+      "expo-localization",
+      "expo-status-bar",
+      "expo-web-browser",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-audio",
+      "expo-sharing",
+      "expo-video",
+      "expo-asset"
     ],
     "extra": {
       "supabaseUrl": "",
-      "supabaseAnonKey": ""
+      "supabaseAnonKey": "",
+      "router": {},
+      "eas": {
+        "projectId": "a0c376f6-75a6-4848-8917-1907bb4c4aaf"
+      }
     }
   }
 }

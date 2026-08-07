@@ -381,6 +381,11 @@ create policy "write own interests" on public.user_interests
 create policy "events readable" on public.events
   for select using (auth.role() = 'authenticated');
 
+-- interests: reference/lookup table, readable by all authenticated users so
+-- they can select tags on their profile.
+create policy "interests readable" on public.interests
+  for select using (auth.role() = 'authenticated');
+
 -- event_attendees: read attendance for events you're in; join/leave only as yourself.
 -- H2: use the SECURITY DEFINER helper instead of a subquery on this same table —
 -- a self-referential policy triggers "infinite recursion detected in policy".
@@ -630,6 +635,14 @@ insert into public.org_domains (domain, org_name) values
   ('greenpeace.org', 'Greenpeace'),
   ('unfccc.int', 'UNFCCC')
 on conflict (domain) do nothing;
+
+-- ===========================================================================
+-- Add test event
+-- ===========================================================================
+
+insert into public.events (name, location, start_date, end_date, description)
+values ('COP31', 'Antalya, Türkiye', '2026-11-09', '2026-11-20',
+        'Pilot event for civil-society networking.');
 
 -- ===========================================================================
 -- Bootstrap a moderator: sign the person up in the app first, then run:
