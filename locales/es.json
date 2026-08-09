@@ -34,6 +34,8 @@
   "discover": {
     "title": "Sugerencias para ti",
     "atEvent": "en {{event}}",
+    "like": "ME GUSTA",
+    "pass": "PASAR",
     "noEventTitle": "Aún no hay evento",
     "noEventBody": "Únete a un evento desde la pestaña Directorio para ver personas que coinciden con tus intereses.",
     "empty": "Aún no hay coincidencias. Añade intereses en tu perfil y vuelve cuando se unan más personas."
@@ -63,6 +65,12 @@
     "savedBody": "Tu perfil está actualizado.",
     "saveFailed": "Error al guardar",
     "language": "Idioma",
+    "photo": {
+      "edit": "Editar",
+      "permissionTitle": "Se necesita acceso a las fotos",
+      "permissionBody": "Permite el acceso a tu galería de fotos para subir una foto de perfil.",
+      "uploadFailed": "Error al subir"
+    },
     "location": {
       "title": "Compartir ubicación",
       "explainer": "Desactivado por defecto. Cuando está activado, otros asistentes ven solo tu zona aproximada — nunca tu ubicación precisa — y el uso compartido caduca automáticamente tras 2 horas.",

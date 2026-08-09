@@ -22,6 +22,8 @@ stubs/opt-in features.
 | Events + join an event | ✅ working |
 | Attendee directory (search + role filter) | ✅ working |
 | Interest-based matching ("Suggested for you" + reasons) | ✅ working (Postgres `suggested_matches` RPC) |
+| Swipe-to-connect discovery (Tinder-style deck) | ✅ working — swipe left = interested, right = pass; already-swiped candidates excluded from future matches |
+| Profile photo upload | ✅ working — Supabase Storage (`avatars` bucket), updates `users.photo_url` |
 | Connect / request / block / report | ✅ working |
 | Row-Level Security (only see co-attendees) | ✅ in schema |
 | Email-domain auto-verification | ✅ in schema (trigger) |
@@ -263,7 +265,7 @@ plan reflects that:
 | Layer | Covers | Tooling | Status |
 |---|---|---|---|
 | **Unit** | Pure logic: geohash, sponsor weighting, language detection | Jest + ts-jest | ✅ **implemented** (17 tests) |
-| **DB / RLS** | Policies, matching SQL, verification lock, privacy, org badges | pgTAP | ✅ **implemented** (40 tests) |
+| **DB / RLS** | Policies, matching SQL, verification lock, privacy, org badges, swipe/connections exclusion, storage | pgTAP | ✅ **implemented** (45 tests) |
 | **Component** | Screens render/behave given props & state | jest-expo + React Native Testing Library | 🔶 TODO |
 | **E2E** | Full flows on device/simulator | Maestro or Detox | 🔶 pre-launch |
 
@@ -301,14 +303,15 @@ put `schema.sql` into `supabase/migrations/` so the tables exist before the test
 
 ```
 app/
-  _layout.tsx            Auth-gated router root
+  _layout.tsx            Auth-gated router root (wrapped in GestureHandlerRootView)
   index.tsx              Redirect to Discover
   (auth)/sign-in.tsx     Email auth (+ LinkedIn OAuth TODO)
+  auth/callback.tsx      Handles email-confirmation deep link, exchanges code for session
   (tabs)/
     _layout.tsx          Bottom tabs
-    discover.tsx         "Suggested for you" (matching RPC)
+    discover.tsx         Swipe deck ("Suggested for you" via matching RPC) — swipe/tap to connect or pass
     directory.tsx        Browse/join events, attendee directory + filters
-    profile.tsx          Edit profile, interests, opt-in location
+    profile.tsx          Edit profile, interests, photo upload, opt-in location
   person/[id].tsx        Profile detail: connect / chat / met / notes / privacy / block
   chat/[peerId].tsx      Stream 1:1 chat screen
   follow-ups.tsx         Met contacts you haven't noted yet
@@ -316,6 +319,7 @@ components/
   Avatar.tsx             Photo with initials fallback
   StarRating.tsx         1–5 star rating input
   PersonCard.tsx
+  SwipeDeck.tsx           Stacked swipeable card deck (Reanimated + Gesture Handler) + tap-to-swipe buttons
   SponsorBanner.tsx      Per-event sponsor ad banner
 context/AuthContext.tsx
 lib/

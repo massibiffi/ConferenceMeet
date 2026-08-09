@@ -273,5 +273,47 @@ select is((select verification_level from public.users where id = :'subk')::text
 select is((select verification_level from public.users where id = :'fake')::text, 'email',
   'org badge: a lookalike domain (wwf-fake.org) is NOT verified');
 
+-- =====================================================================
+-- Swipe-deck feature: interests read policy, connection_status 'passed',
+-- and suggested_matches now excluding ANY existing connection (not just
+-- 'blocked') so the deck doesn't repeat people already swiped on.
+-- =====================================================================
+
+-- Fixture: a single interest row (interests aren't part of the schema
+-- migration's seed data, so we insert one here to test the read policy).
+insert into public.interests (id, label, category) values (9001, 'Test Interest', 'Test');
+
+select set_config('request.jwt.claims', json_build_object('sub', :'alice', 'role', 'authenticated')::text, true);
+select is((select count(*) from public.interests where id = 9001)::int, 1,
+  'interests: authenticated users can read the interests table');
+
+-- connection_status 'passed' is a valid enum value and can be inserted
+-- (bob and carol both attend e1, satisfying the shares_event_with check).
+select set_config('request.jwt.claims', json_build_object('sub', :'bob', 'role', 'authenticated')::text, true);
+select lives_ok(
+  format($$ insert into public.connections (requester_id, recipient_id, status) values (%L, %L, 'passed') $$, :'bob', :'carol'),
+  'connections: passed is a valid connection_status value'
+);
+
+-- suggested_matches: bob<->alice already have a 'pending' connection from
+-- an earlier test in this file. Under the OLD exclusion logic (only
+-- 'blocked' was excluded), bob would still appear in alice's matches.
+-- Under the NEW logic (any existing connection excludes), he should not.
+select set_config('request.jwt.claims', json_build_object('sub', :'alice', 'role', 'authenticated')::text, true);
+select is((select count(*) from public.suggested_matches(:'e1') where user_id = :'bob')::int, 0,
+  'suggested_matches: excludes candidates with ANY existing connection, not just blocked (pending)');
+
+-- Same check for the 'passed' status specifically, using the bob->carol
+-- connection created above.
+select set_config('request.jwt.claims', json_build_object('sub', :'bob', 'role', 'authenticated')::text, true);
+select is((select count(*) from public.suggested_matches(:'e1') where user_id = :'carol')::int, 0,
+  'suggested_matches: a passed connection also excludes the candidate from future results');
+
+-- avatars storage bucket exists and is public (photo upload feature).
+reset role;
+select is((select public from storage.buckets where id = 'avatars'), true,
+  'storage: avatars bucket exists and is public');
+set local role authenticated;
+
 select * from finish();
 rollback;

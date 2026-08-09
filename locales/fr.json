@@ -34,6 +34,8 @@
   "discover": {
     "title": "Suggéré pour vous",
     "atEvent": "à {{event}}",
+    "like": "J'AIME",
+    "pass": "PASSER",
     "noEventTitle": "Aucun événement",
     "noEventBody": "Rejoignez un événement depuis l'onglet Annuaire pour voir des personnes correspondant à vos centres d'intérêt.",
     "empty": "Pas encore de correspondances. Ajoutez des centres d'intérêt à votre profil et revenez quand d'autres personnes rejoindront."
@@ -63,6 +65,12 @@
     "savedBody": "Votre profil est à jour.",
     "saveFailed": "Échec de l'enregistrement",
     "language": "Langue",
+    "photo": {
+      "edit": "Modifier",
+      "permissionTitle": "Accès aux photos requis",
+      "permissionBody": "Veuillez autoriser l'accès à votre photothèque pour envoyer une photo de profil.",
+      "uploadFailed": "Échec de l'envoi"
+    },
     "location": {
       "title": "Partage de position",
       "explainer": "Désactivé par défaut. Une fois activé, les autres participants voient uniquement votre zone approximative — jamais votre position précise — et le partage expire automatiquement après 2 heures.",

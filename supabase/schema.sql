@@ -14,6 +14,7 @@ create type verification_level as enum (
 );
 
 create type connection_status as enum ('pending', 'accepted', 'blocked');
+alter type connection_status add value if not exists 'passed';
 
 -- ---------------------------------------------------------------------------
 -- users  (profile rows; 1:1 with auth.users)
@@ -520,21 +521,19 @@ as $$
         select 1 from event_attendees mine
         where mine.user_id = auth.uid() and mine.event_id = p_event_id
       )
-      -- exclude anyone already blocked in either direction
+      -- exclude anyone already swiped on (any connection row in either
+      -- direction, regardless of status) so the deck doesn't repeat people
       and not exists (
         select 1 from connections c
-        where c.status = 'blocked'
-          and ((c.requester_id = auth.uid() and c.recipient_id = u.id)
-            or (c.requester_id = u.id and c.recipient_id = auth.uid()))
+        where (c.requester_id = auth.uid() and c.recipient_id = u.id)
+           or (c.requester_id = u.id and c.recipient_id = auth.uid())
       )
   ),
   scored as (
     select
       c.id, c.name, c.headline, c.org, c.role, c.photo_url, c.verification_level,
-      -- shared interest tags * 3
       (select count(*) from user_interests ui
         where ui.user_id = c.id and ui.interest_id in (select unnest(my_interests) from me)) as shared_count,
-      -- role bonus: same role or a "complementary" pairing (journalist<->ngo, researcher<->activist)
       case
         when c.role = (select role from me) then 2
         when (c.role, (select role from me)) in
@@ -542,7 +541,6 @@ as $$
               ('researcher','activist'),('activist','researcher')) then 2
         else 0
       end as role_bonus,
-      -- crude intent overlap: shared significant words (length > 4)
       (select count(distinct w) from (
         select unnest(string_to_array(lower(regexp_replace(coalesce(c.intent_text,''), '[^a-z ]', '', 'gi')), ' ')) as w
         intersect
@@ -643,6 +641,27 @@ on conflict (domain) do nothing;
 insert into public.events (name, location, start_date, end_date, description)
 values ('COP31', 'Antalya, Türkiye', '2026-11-09', '2026-11-20',
         'Pilot event for civil-society networking.');
+
+-- ===========================================================================
+-- Add new policies for swipe
+-- ===========================================================================
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+create policy "Avatar images are publicly accessible"
+on storage.objects for select
+using (bucket_id = 'avatars');
+
+create policy "Users can upload their own avatar"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+create policy "Users can update their own avatar"
+on storage.objects for update
+to authenticated
+using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
 
 -- ===========================================================================
 -- Bootstrap a moderator: sign the person up in the app first, then run:

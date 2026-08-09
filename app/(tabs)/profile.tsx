@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import {
   View,
   Text,
@@ -32,6 +33,7 @@ export default function Profile() {
   const { signOut } = useAuth();
   const { event } = useActiveEvent();
   const [loading, setLoading] = useState(true);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<Partial<UserProfile>>({ role: "other" });
   const [allInterests, setAllInterests] = useState<Interest[]>([]);
@@ -68,6 +70,68 @@ export default function Profile() {
     setProfile((p) => ({ ...p, [key]: value }));
   }
 
+
+async function pickAndUploadPhoto() {
+  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (!permission.granted) {
+    Alert.alert(t("profile.photo.permissionTitle"), t("profile.photo.permissionBody"));
+    return;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.7,
+  });
+
+  if (result.canceled || !result.assets?.[0]) return;
+
+  const asset = result.assets[0];
+  setUploadingPhoto(true);
+
+  try {
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) return;
+
+    const fileExt = asset.uri.split(".").pop() ?? "jpg";
+    const filePath = `${uid}/avatar.${fileExt}`;
+
+    const response = await fetch(asset.uri);
+    const blob = await response.blob();
+    const arrayBuffer = await new Response(blob).arrayBuffer();
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, arrayBuffer, {
+        contentType: asset.mimeType ?? "image/jpeg",
+        upsert: true,
+      });
+
+    if (uploadError) {
+      Alert.alert(t("profile.photo.uploadFailed"), uploadError.message);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+    const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`; // cache-bust
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ photo_url: publicUrl })
+      .eq("id", uid);
+
+    if (updateError) {
+      Alert.alert(t("profile.photo.uploadFailed"), updateError.message);
+      return;
+    }
+
+    set("photo_url", publicUrl);
+  } finally {
+    setUploadingPhoto(false);
+  }
+}
  /* function toggleInterest(id: number) {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -145,9 +209,18 @@ function toggleInterest(id: number) {
       <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}>
         <Text style={styles.h1}>{t("profile.title")}</Text>
 
-        <View style={styles.avatarRow}>
-          <Avatar name={profile.name} photoUrl={profile.photo_url} size={72} />
-        </View>
+       <View style={styles.avatarRow}>
+         <Pressable onPress={pickAndUploadPhoto} disabled={uploadingPhoto}>
+           <Avatar name={profile.name} photoUrl={profile.photo_url} size={72} />
+           <View style={styles.avatarEditBadge}>
+             {uploadingPhoto ? (
+               <ActivityIndicator size="small" color="#fff" />
+             ) : (
+               <Text style={styles.avatarEditText}>{t("profile.photo.edit")}</Text>
+             )}
+           </View>
+         </Pressable>
+       </View>
 
         <Field label={t("profile.name")}>
           <TextInput style={styles.input} value={profile.name ?? ""} onChangeText={(v) => set("name", v)} />
@@ -314,6 +387,16 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     alignItems: "center",
   },
+avatarEditBadge: {
+  position: "absolute",
+  bottom: -4,
+  right: -4,
+  backgroundColor: colors.accent,
+  borderRadius: 10,
+  paddingHorizontal: 6,
+  paddingVertical: 2,
+},
+avatarEditText: { color: "#fff", fontSize: 10, fontWeight: "700" },
   locationBtnOn: { backgroundColor: colors.accent },
   locationBtnText: { color: colors.accent, fontWeight: "600" },
   signOut: { padding: spacing.md, alignItems: "center", marginTop: spacing.lg },

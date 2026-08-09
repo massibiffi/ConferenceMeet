@@ -6,3 +6,4 @@ web-build/
 moderation/config.js
 *.log
 .DS_Store
+.idea/

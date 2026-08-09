@@ -1,19 +1,11 @@
-import { useCallback, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  RefreshControl,
-  ActivityIndicator,
-} from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { useActiveEvent } from "@/lib/useActiveEvent";
-import { PersonCard } from "@/components/PersonCard";
+import { SwipeDeck, SwipeActionButtons, type SwipeDeckHandle } from "@/components/SwipeDeck";
 import { SponsorBanner } from "@/components/SponsorBanner";
 import { colors, spacing } from "@/lib/theme";
 import type { MatchResult } from "@/lib/types";
@@ -26,6 +18,7 @@ export default function Discover() {
   const [followUpCount, setFollowUpCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const deckRef = useRef<SwipeDeckHandle>(null);
 
   const load = useCallback(async () => {
     if (!event) return;
@@ -53,8 +46,35 @@ export default function Discover() {
     }, [load])
   );
 
+  async function recordSwipe(item: MatchResult, status: "accepted" | "passed") {
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) return;
+
+    await supabase
+      .from("connections")
+      .upsert(
+        { requester_id: uid, recipient_id: item.user_id, status },
+        { onConflict: "requester_id,recipient_id" }
+      );
+  }
+
+  function handleSwipeLeft(item: MatchResult) {
+    // Left = interested / "like to meet"
+    recordSwipe(item, "accepted");
+  }
+
+  function handleSwipeRight(item: MatchResult) {
+    // Right = dismissed / not interested
+    recordSwipe(item, "passed");
+  }
+
   if (eventLoading) {
-    return <Centered><ActivityIndicator color={colors.accent} /></Centered>;
+    return (
+      <Centered>
+        <ActivityIndicator color={colors.accent} />
+      </Centered>
+    );
   }
 
   if (!event) {
@@ -68,48 +88,47 @@ export default function Discover() {
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
-      <FlatList
-        data={matches}
-        keyExtractor={(m) => m.user_id}
-        contentContainerStyle={{ padding: spacing.lg }}
-        ListHeaderComponent={
-          <View style={{ marginBottom: spacing.md }}>
-            <Text style={styles.h1}>{t("discover.title")}</Text>
-            <Text style={[styles.sub, { marginBottom: spacing.md }]}>
-              {t("discover.atEvent", { event: event.name })}
-            </Text>
-            {followUpCount > 0 && (
-              <Pressable style={styles.followUp} onPress={() => router.push("/follow-ups")}>
-                <Text style={styles.followUpText}>
-                  {t("followups.banner", { count: followUpCount })}
-                </Text>
-                <Text style={styles.followUpChevron}>›</Text>
-              </Pressable>
-            )}
-            <SponsorBanner eventId={event.id} />
-          </View>
-        }
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.accent} />
-        }
-        renderItem={({ item }) => (
-          <PersonCard
-            name={item.name}
-            photoUrl={item.photo_url}
-            headline={item.headline}
-            org={item.org}
-            role={item.role}
-            verification={item.verification_level}
-            sharedInterests={item.shared_interests}
-            score={item.score}
-            met={metIds.has(item.user_id)}
-            onPress={() => router.push(`/person/${item.user_id}`)}
-          />
+      <ScrollView contentContainerStyle={{ padding: spacing.lg }}>
+        <Text style={styles.h1}>{t("discover.title")}</Text>
+        <Text style={[styles.sub, { marginBottom: spacing.md }]}>
+          {t("discover.atEvent", { event: event.name })}
+        </Text>
+        {followUpCount > 0 && (
+          <Pressable style={styles.followUp} onPress={() => router.push("/follow-ups")}>
+            <Text style={styles.followUpText}>{t("followups.banner", { count: followUpCount })}</Text>
+            <Text style={styles.followUpChevron}>›</Text>
+          </Pressable>
         )}
-        ListEmptyComponent={
-          !loading ? <Text style={styles.emptyBody}>{t("discover.empty")}</Text> : null
-        }
-      />
+        <SponsorBanner eventId={event.id} />
+
+        {loading && matches.length === 0 ? (
+          <Centered>
+            <ActivityIndicator color={colors.accent} />
+          </Centered>
+        ) : (
+          <>
+            <SwipeDeck
+              ref={deckRef}
+              data={matches}
+              metIds={metIds}
+              onSwipeLeft={handleSwipeLeft}
+              onSwipeRight={handleSwipeRight}
+              onPressCard={(item) => router.push(`/person/${item.user_id}`)}
+              emptyComponent={
+                <View style={styles.centered}>
+                  <Text style={styles.emptyBody}>{t("discover.empty")}</Text>
+                </View>
+              }
+            />
+            {matches.length > 0 && (
+              <SwipeActionButtons
+                onPass={() => deckRef.current?.swipeRight()}
+                onLike={() => deckRef.current?.swipeLeft()}
+              />
+            )}
+          </>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }

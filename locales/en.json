@@ -34,6 +34,8 @@
   "discover": {
     "title": "Suggested for you",
     "atEvent": "at {{event}}",
+    "like": "LIKE",
+    "pass": "PASS",
     "noEventTitle": "No event yet",
     "noEventBody": "Join an event from the Directory tab to see people matched to your interests.",
     "empty": "No matches yet. Add interests on your Profile, and check back as more people join."
@@ -63,6 +65,12 @@
     "savedBody": "Your profile is up to date.",
     "saveFailed": "Save failed",
     "language": "Language",
+    "photo": {
+      "edit": "Edit",
+      "permissionTitle": "Photo access needed",
+      "permissionBody": "Please allow photo library access to upload a profile picture.",
+      "uploadFailed": "Upload failed"
+    },
     "location": {
       "title": "Location sharing",
       "explainer": "Off by default. When on, others at your event see only your approximate zone — never your precise location — and sharing auto-expires after 2 hours.",
