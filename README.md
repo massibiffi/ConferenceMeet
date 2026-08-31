@@ -101,6 +101,10 @@ values ('COP31', 'Antalya, Türkiye', '2026-11-09', '2026-11-20',
 ```bash
 npm start
 ```
+### 6. Rebuild
+```bash
+npx expo prebuild --clean
+```
 
 Scan the QR code with Expo Go, or press `i` / `a` for a simulator.
 

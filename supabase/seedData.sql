@@ -135,3 +135,7 @@ where requester_id = 'b555fd2a-43d7-4569-b777-b9decbc0473f'
     select id from users
     where name in ('Amara Okafor', 'Diego Fernández', 'Priya Ramanathan', 'Kwame Boateng')
   );
+
+  insert into public.events (name, location, start_date, end_date, description)
+  values ('COP31', 'Antalya, Türkiye', '2026-11-09', '2026-11-20',
+          'Pilot event for civil-society networking.');
