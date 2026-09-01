@@ -151,7 +151,9 @@ export default function PersonDetail() {
 
   function openChat() {
     if (!id) return;
-    // The chat screen connects to Stream and opens the 1:1 channel for this pair.
+    // Chat requires an accepted connection - this is only reachable via the
+    // primary button, which is gated on status === "accepted".
+    // The open-channel Edge Function re-verifies this server-side too.
     router.push({
       pathname: "/chat/[peerId]",
       params: { peerId: id, peerName: person?.name ?? t("chat.title") },
@@ -246,6 +248,15 @@ export default function PersonDetail() {
 
         {status !== "blocked" && (
           <>
+            {/*
+              Chat requires an accepted connection first.
+              - status !== "accepted": button reads "Connect" / "Request Sent" and sends a request.
+              - status === "accepted": button reads "Message" and opens the Stream chat channel.
+              (There used to be a second, always-visible "Open Chat" button here that let
+              people skip the connection step entirely - removed since chat should be
+              gated on an accepted connection. The open-channel Edge Function does NOT
+              enforce this itself - server-side enforcement should be added there too.)
+            */}
             <Pressable
               style={styles.primaryBtn}
               onPress={status === "accepted" ? openChat : connect}
@@ -258,9 +269,6 @@ export default function PersonDetail() {
                   ? t("person.requestSent")
                   : t("person.connect")}
               </Text>
-            </Pressable>
-            <Pressable style={styles.secondaryBtn} onPress={openChat}>
-              <Text style={styles.secondaryText}>{t("person.openChat")}</Text>
             </Pressable>
             <Pressable
               style={[styles.metBtn, met && styles.metBtnOn]}

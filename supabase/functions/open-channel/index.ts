@@ -1,9 +1,10 @@
 // Supabase Edge Function: authorize and open a 1:1 chat channel.
 //
 // M2 fix: channel creation must be gated server-side. This verifies that the
-// caller and the peer share an event and that neither is banned, then creates
-// the channel with the Stream *server* client and returns its id. The mobile
-// client only watches the returned channel — it never creates channels itself.
+// caller and the peer share an event, that they have an ACCEPTED connection,
+// and that neither is banned, then creates the channel with the Stream
+// *server* client and returns its id. The mobile client only watches the
+// returned channel — it never creates channels itself.
 //
 // Lock this down fully by disabling the "create-channel" permission for the
 // `user` role in the Stream dashboard, so a client token cannot bypass this
@@ -66,6 +67,23 @@ serve(async (req) => {
     );
     if (sharesErr) return json({ error: sharesErr.message }, 500);
     if (!shares) return json({ error: "You don't share an event with this person" }, 403);
+
+    // Caller and peer must have an ACCEPTED connection. Chat is not open to
+    // any co-attendee — it requires both sides to have accepted a connection
+    // request first. This mirrors the client-side gating in app/person/[id].tsx,
+    // but must also be enforced here since a client token could otherwise call
+    // this function directly and skip the UI entirely.
+    const { data: connection, error: connErr } = await supabase
+      .from("connections")
+      .select("status")
+      .or(
+        `and(requester_id.eq.${user.id},recipient_id.eq.${peerId}),and(requester_id.eq.${peerId},recipient_id.eq.${user.id})`
+      )
+      .maybeSingle();
+    if (connErr) return json({ error: connErr.message }, 500);
+    if (!connection || connection.status !== "accepted") {
+      return json({ error: "You must be connected with this person to chat" }, 403);
+    }
 
     // Peer must be visible (RLS hides banned/non-co-attendee rows).
     const { data: peer } = await supabase
