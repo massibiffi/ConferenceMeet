@@ -7,3 +7,5 @@ moderation/config.js
 *.log
 .DS_Store
 .idea/
+/android
+/ios
