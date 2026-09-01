@@ -15,8 +15,24 @@ export async function getStreamClient(): Promise<StreamChat> {
   if (connecting) return connecting;
 
   connecting = (async () => {
+    //const { data, error } = await supabase.functions.invoke("stream-token");
+    //if (error) throw new Error(`stream-token failed: ${error.message}`);
     const { data, error } = await supabase.functions.invoke("stream-token");
-    if (error) throw new Error(`stream-token failed: ${error.message}`);
+    if (error) {
+      console.log("stream-token error (raw):", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      try {
+        const ctx = (error as any).context;
+        if (ctx?.text) {
+          const body = await ctx.text();
+          console.log("stream-token error body:", body);
+        } else {
+          console.log("stream-token error has no readable context:", ctx);
+        }
+      } catch (readErr) {
+        console.log("failed to read error context:", readErr);
+      }
+      throw new Error(`stream-token failed: ${error.message}`);
+    }
     const { token, apiKey, userId } = data as {
       token: string;
       apiKey: string;
@@ -52,7 +68,20 @@ export async function getDirectChannel(peerId: string) {
   const { data, error } = await supabase.functions.invoke("open-channel", {
     body: { peerId },
   });
-  if (error) throw new Error(`open-channel failed: ${error.message}`);
+  //if (error) throw new Error(`open-channel failed: ${error.message}`);
+    if (error) {
+      console.log("open-channel error (raw):", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      try {
+        const ctx = (error as any).context;
+        if (ctx?.text) {
+          const body = await ctx.text();
+          console.log("open-channel error body:", body);
+        }
+      } catch (readErr) {
+        console.log("failed to read open-channel error context:", readErr);
+      }
+      throw new Error(`open-channel failed: ${error.message}`);
+    }
   const { channelId } = data as { channelId: string };
 
   const channel = c.channel("messaging", channelId);

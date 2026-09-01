@@ -82,15 +82,6 @@ export default function PersonDetail() {
     load();
   }, [load]);
 
-  async function connect() {
-    if (!meId || !id) return;
-    const { error } = await supabase
-      .from("connections")
-      .insert({ requester_id: meId, recipient_id: id, status: "pending" });
-    if (error) Alert.alert(t("person.requestFailed"), error.message);
-    else setStatus("pending");
-  }
-
   async function toggleMet() {
     if (!meId || !id) return;
     const next = !met;
@@ -151,8 +142,9 @@ export default function PersonDetail() {
 
   function openChat() {
     if (!id) return;
-    // Chat requires an accepted connection - this is only reachable via the
-    // primary button, which is gated on status === "accepted".
+    // Chat requires an accepted connection - only reachable once status === "accepted",
+    // which is only ever set via a swipe-left "like" on the Discover tab (see
+    // app/(tabs)/discover.tsx). There is no in-app "Connect" button anymore.
     // The open-channel Edge Function re-verifies this server-side too.
     router.push({
       pathname: "/chat/[peerId]",
@@ -249,27 +241,15 @@ export default function PersonDetail() {
         {status !== "blocked" && (
           <>
             {/*
-              Chat requires an accepted connection first.
-              - status !== "accepted": button reads "Connect" / "Request Sent" and sends a request.
-              - status === "accepted": button reads "Message" and opens the Stream chat channel.
-              (There used to be a second, always-visible "Open Chat" button here that let
-              people skip the connection step entirely - removed since chat should be
-              gated on an accepted connection. The open-channel Edge Function does NOT
-              enforce this itself - server-side enforcement should be added there too.)
+              Connecting only happens via a swipe-left "like" on the Discover tab
+              (app/(tabs)/discover.tsx) - there is no "Connect" button here anymore.
+              "Message" only appears once status === "accepted".
             */}
-            <Pressable
-              style={styles.primaryBtn}
-              onPress={status === "accepted" ? openChat : connect}
-              disabled={status === "pending"}
-            >
-              <Text style={styles.primaryText}>
-                {status === "accepted"
-                  ? t("person.message")
-                  : status === "pending"
-                  ? t("person.requestSent")
-                  : t("person.connect")}
-              </Text>
-            </Pressable>
+            {status === "accepted" && (
+              <Pressable style={styles.primaryBtn} onPress={openChat}>
+                <Text style={styles.primaryText}>{t("person.message")}</Text>
+              </Pressable>
+            )}
             <Pressable
               style={[styles.metBtn, met && styles.metBtnOn]}
               onPress={toggleMet}
