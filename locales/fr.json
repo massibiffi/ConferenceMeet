@@ -5,6 +5,8 @@
     "signOut": "Se déconnecter",
     "ad": "Pub",
     "notNow": "Plus tard",
+    "saving": "Enregistrement...",
+    "saved": "Enregistré",
     "save": "Enregistrer"
   },
   "auth": {

@@ -8,6 +8,22 @@ import { colors, spacing } from "@/lib/theme";
 import type { Sponsor } from "@/lib/types";
 
 /**
+ * DEV-ONLY fallback sponsor, shown when an event has no real rows in the
+ * `sponsors` table yet. Lets the banner be tested/styled without needing to
+ * seed real sponsor data. Never shown in production builds (__DEV__ gate below).
+ */
+const FAKE_SPONSOR: Sponsor = {
+  id: "fake-sponsor-dev",
+  event_id: "dev",
+  name: "Acme Renewables",
+  tagline: "Powering tomorrow, today.",
+  logo_url: null,
+  link_url: "https://example.com",
+  is_active: true,
+  weight: 1,
+} as Sponsor;
+
+/**
  * Shows one sponsor ad for the given event, rotating every ~12s when there are
  * several. Renders nothing when the event has no active sponsors — ads are
  * opt-in per event, so unsponsored events stay ad-free.
@@ -26,7 +42,13 @@ export function SponsorBanner({ eventId }: { eventId: string }) {
         .eq("event_id", eventId)
         .eq("is_active", true);
       if (!active) return;
-      const list = (data as Sponsor[]) ?? [];
+      let list = (data as Sponsor[]) ?? [];
+      // DEV-ONLY: fall back to a fake sponsor so the banner is visible/testable
+      // even when the event has no real sponsors seeded yet. Remove this
+      // fallback (or leave it - it's __DEV__-gated) once real sponsors exist.
+      if (list.length === 0 && __DEV__) {
+        list = [FAKE_SPONSOR];
+      }
       setSponsors(list);
       setCurrent(weightedPick(list));
     })();

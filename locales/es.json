@@ -5,6 +5,8 @@
     "signOut": "Cerrar sesión",
     "ad": "Anuncio",
     "notNow": "Ahora no",
+    "saving": "Guardando...",
+    "saved": "Guardado",
     "save": "Guardar"
   },
   "auth": {

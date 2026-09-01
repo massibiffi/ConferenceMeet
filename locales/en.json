@@ -5,6 +5,8 @@
     "signOut": "Sign out",
     "ad": "Ad",
     "notNow": "Not now",
+    "saving": "Saving...",
+    "saved": "Saved",
     "save": "Save"
   },
   "auth": {

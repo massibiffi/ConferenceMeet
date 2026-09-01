@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { decode } from "base64-arraybuffer";
 import {
   View,
   Text,
@@ -79,7 +81,7 @@ async function pickAndUploadPhoto() {
   }
 
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ["images"],
     allowsEditing: true,
     aspect: [1, 1],
     quality: 0.7,
@@ -98,9 +100,16 @@ async function pickAndUploadPhoto() {
     const fileExt = asset.uri.split(".").pop() ?? "jpg";
     const filePath = `${uid}/avatar.${fileExt}`;
 
-    const response = await fetch(asset.uri);
-    const blob = await response.blob();
-    const arrayBuffer = await new Response(blob).arrayBuffer();
+    // Read the picked file directly as base64 and decode straight to an
+    // ArrayBuffer. Avoids fetch(asset.uri).blob() - React Native's Blob
+    // implementation copies the response into its native blob store and
+    // reads it back through base64 encoding anyway, so going through
+    // fetch()/Response.blob() first is a redundant extra round-trip for
+    // local files (and is what triggers RN's blob performance warning).
+    const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    const arrayBuffer = decode(base64);
 
     const { error: uploadError } = await supabase.storage
       .from("avatars")

@@ -29,6 +29,7 @@ export default function PersonDetail() {
   const [note, setNote] = useState("");
   const [rating, setRating] = useState<number | null>(null);
   const [savingNotes, setSavingNotes] = useState(false);
+  const [notesJustSaved, setNotesJustSaved] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [hideLocation, setHideLocation] = useState(false);
   const [meId, setMeId] = useState<string | null>(null);
@@ -110,6 +111,7 @@ export default function PersonDetail() {
   async function saveNotes() {
     if (!meId || !id) return;
     setSavingNotes(true);
+    setNotesJustSaved(false);
     const { error } = await supabase.from("contact_notes").upsert({
       owner_id: meId,
       contact_id: id,
@@ -118,7 +120,12 @@ export default function PersonDetail() {
       updated_at: new Date().toISOString(),
     });
     setSavingNotes(false);
-    if (error) Alert.alert(t("person.requestFailed"), error.message);
+    if (error) {
+      Alert.alert(t("person.requestFailed"), error.message);
+      return;
+    }
+    setNotesJustSaved(true);
+    setTimeout(() => setNotesJustSaved(false), 2000);
   }
 
   async function setPrivacy(next: { hidden?: boolean; hide_location?: boolean }) {
@@ -198,9 +205,12 @@ export default function PersonDetail() {
   const verified = person.verification_level !== "none";
 
   return (
-    <SafeAreaView style={styles.safe} edges={["bottom"]}>
+    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <Stack.Screen options={{ title: person.name || t("tabs.profile") }} />
-      <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}>
+      <ScrollView
+        contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.header}>
           <Avatar name={person.name} photoUrl={person.photo_url} size={64} />
           <View style={{ flex: 1 }}>
@@ -271,9 +281,16 @@ export default function PersonDetail() {
                 value={note}
                 onChangeText={setNote}
               />
-              <Pressable style={styles.saveNotesBtn} onPress={saveNotes} disabled={savingNotes}>
-                <Text style={styles.saveNotesText}>{t("person.saveNotes")}</Text>
-              </Pressable>
+              <View style={styles.saveNotesRow}>
+                <Pressable style={styles.saveNotesBtn} onPress={saveNotes} disabled={savingNotes}>
+                  <Text style={styles.saveNotesText}>
+                    {savingNotes ? t("common.saving") : t("person.saveNotes")}
+                  </Text>
+                </Pressable>
+                {notesJustSaved && (
+                  <Text style={styles.savedConfirmation}>✓ {t("common.saved")}</Text>
+                )}
+              </View>
             </View>
 
             {/* Feature 1: per-contact privacy */}
@@ -364,8 +381,10 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: "top",
   },
-  saveNotesBtn: { backgroundColor: colors.accent, borderRadius: 10, padding: spacing.md, alignItems: "center" },
+  saveNotesRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  saveNotesBtn: { backgroundColor: colors.accent, borderRadius: 10, padding: spacing.md, alignItems: "center", flex: 1 },
   saveNotesText: { color: "#fff", fontWeight: "700" },
+  savedConfirmation: { color: colors.accentDark, fontWeight: "600" },
   switchRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.md },
   switchLabel: { color: colors.text, flex: 1 },
   safetyRow: { flexDirection: "row", gap: spacing.sm, justifyContent: "center", marginTop: spacing.lg },

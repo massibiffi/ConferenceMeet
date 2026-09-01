@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Channel as ChannelType, StreamChat } from "stream-chat";
 import {
@@ -71,14 +72,16 @@ export default function ChatScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack.Screen options={{ title: peerName || t("chat.title") }} />
-      <OverlayProvider>
-        <Chat client={client as unknown as ChatClientProp}>
-          <Channel channel={channel as unknown as ChannelProp}>
-            <MessageList />
-            <MessageInput />
-          </Channel>
-        </Chat>
-      </OverlayProvider>
+      <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+        <OverlayProvider>
+          <Chat client={client as unknown as ChatClientProp}>
+            <Channel channel={channel as unknown as ChannelProp}>
+              <MessageList />
+              <MessageInput />
+            </Channel>
+          </Chat>
+        </OverlayProvider>
+      </SafeAreaView>
     </GestureHandlerRootView>
   );
 }
