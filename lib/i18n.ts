@@ -1,3 +1,28 @@
+// Intl polyfills must load before i18next.init() runs, and before any other
+// import that might touch Intl - Hermes only partially implements the Intl
+// API (notably missing Intl.PluralRules), which i18next needs to resolve
+// plural forms correctly. Without this, i18next logs an error and falls back
+// to English-only one/other plural rules for every language, which silently
+// breaks pluralization in French/Spanish/Arabic (Arabic in particular has far
+// more plural categories than English: zero/one/two/few/many/other).
+import { shouldPolyfill as shouldPolyfillGetCanonicalLocales } from "@formatjs/intl-getcanonicallocales/should-polyfill";
+import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/should-polyfill";
+import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/should-polyfill";
+
+if (shouldPolyfillGetCanonicalLocales()) {
+  require("@formatjs/intl-getcanonicallocales/polyfill");
+}
+if (shouldPolyfillLocale()) {
+  require("@formatjs/intl-locale/polyfill");
+}
+if (shouldPolyfillPluralRules()) {
+  require("@formatjs/intl-pluralrules/polyfill");
+  require("@formatjs/intl-pluralrules/locale-data/en");
+  require("@formatjs/intl-pluralrules/locale-data/fr");
+  require("@formatjs/intl-pluralrules/locale-data/es");
+  require("@formatjs/intl-pluralrules/locale-data/ar");
+}
+
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { getLocales } from "expo-localization";
